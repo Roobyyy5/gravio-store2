@@ -1,0 +1,98 @@
+{
+  "Nav": {
+    "home": "Home",
+    "catalog": "Catalog",
+    "cart": "Cart"
+  },
+  "Footer": {
+    "description": "Carefully curated products, shipped worldwide. New arrivals are added automatically every day.",
+    "shop": "Shop",
+    "home": "Home",
+    "catalog": "Catalog",
+    "cart": "Cart",
+    "whyUs": "Why Gravio",
+    "shipping": "Worldwide shipping on every order",
+    "secureCheckout": "Secure checkout powered by Stripe",
+    "freshPicks": "Fresh picks added automatically",
+    "copyright": "© {year} Gravio Store. All rights reserved."
+  },
+  "HomePage": {
+    "badge": "New arrivals added every day",
+    "title": "Discover products you'll <highlight>love</highlight>",
+    "subtitle": "Carefully selected products, shipped worldwide. Browse the catalog and find your next favorite thing.",
+    "shopNow": "Shop now",
+    "featuredProducts": "Featured products",
+    "viewAll": "View all",
+    "noProducts": "No products yet — check back soon.",
+    "features": {
+      "shippingTitle": "Worldwide shipping",
+      "shippingDescription": "We ship to customers around the globe.",
+      "checkoutTitle": "Secure checkout",
+      "checkoutDescription": "Payments processed securely via Stripe.",
+      "freshTitle": "Fresh picks daily",
+      "freshDescription": "New products are added to the catalog automatically.",
+      "syncTitle": "Always up to date",
+      "syncDescription": "Inventory and prices stay in sync with our suppliers around the clock."
+    }
+  },
+  "ProductsPage": {
+    "title": "Catalog",
+    "count": "{count, plural, one {# product} other {# products}}",
+    "inCategory": " in \"{category}\"",
+    "all": "All",
+    "empty": "No products available yet."
+  },
+  "ProductDetail": {
+    "noImage": "No image"
+  },
+  "ProductCard": {
+    "noImage": "No image",
+    "from": "from"
+  },
+  "VariantSelector": {
+    "unavailable": "Currently unavailable.",
+    "inStock": "{stock} in stock",
+    "outOfStock": "Out of stock",
+    "addToCart": "Add to cart",
+    "addedToCart": "Added to cart"
+  },
+  "CartPage": {
+    "emptyTitle": "Your cart is empty",
+    "emptyDescription": "Add some products to get started.",
+    "browseCatalog": "Browse catalog",
+    "title": "Your cart",
+    "remove": "Remove",
+    "total": "Total: {total}",
+    "checkout": "Checkout"
+  },
+  "CheckoutPage": {
+    "emptyTitle": "Your cart is empty",
+    "browseCatalog": "Browse catalog",
+    "title": "Checkout",
+    "total": "Total",
+    "notice": "You will enter your shipping address and payment details on the next, secure page.",
+    "redirecting": "Redirecting...",
+    "proceedToPayment": "Proceed to payment",
+    "error": "Checkout failed"
+  },
+  "CheckoutSuccess": {
+    "title": "Thank you for your order!",
+    "description": "We have received your payment and will start processing your order shortly. A confirmation email is on its way.",
+    "continueShopping": "Continue shopping"
+  },
+  "CheckoutCancel": {
+    "title": "Checkout cancelled",
+    "description": "Your payment was not completed. Your cart is still saved if you would like to try again.",
+    "backToCart": "Back to cart"
+  },
+  "Pagination": {
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "LanguageSwitcher": {
+    "label": "Language",
+    "uk": "Українська",
+    "en": "English",
+    "ru": "Русский"
+  }
+}
