@@ -14,6 +14,10 @@ import {
 import { ProductActiveToggle } from "@/components/admin/product-active-toggle";
 import { Pencil } from "lucide-react";
 
+// Reads live product data, so it must not be statically generated at build
+// time (the DB is unreachable from the build container on Railway/Nixpacks).
+export const dynamic = "force-dynamic";
+
 export default async function AdminProductsPage() {
   const products = await prisma.product.findMany({
     include: { variants: { select: { salePrice: true, stock: true } } },

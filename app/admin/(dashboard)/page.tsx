@@ -5,6 +5,10 @@ import { OrderStatus } from "@prisma/client";
 import { cn } from "@/lib/utils";
 import { Clock, Layers, Package, ShoppingCart } from "lucide-react";
 
+// Reads live DB stats, so it must not be statically generated at build time
+// (the DB is unreachable from the build container on Railway/Nixpacks).
+export const dynamic = "force-dynamic";
+
 async function getStats() {
   const [productCount, activeProductCount, variantCount, outOfStockCount, orderCounts] =
     await Promise.all([

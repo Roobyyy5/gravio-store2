@@ -2,6 +2,10 @@ import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { routing } from "@/i18n/routing";
 
+// Reads live product data, so it must not be statically generated at build
+// time (the DB is unreachable from the build container on Railway/Nixpacks).
+export const dynamic = "force-dynamic";
+
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
 
 /** Prefixes a path with the locale, matching localePrefix: "as-needed" (default locale has no prefix). */

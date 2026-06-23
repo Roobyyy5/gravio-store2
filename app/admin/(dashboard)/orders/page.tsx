@@ -10,6 +10,10 @@ import {
 } from "@/components/ui/table";
 import { OrderStatusBadge } from "@/components/admin/order-status-badge";
 
+// Reads live order data, so it must not be statically generated at build
+// time (the DB is unreachable from the build container on Railway/Nixpacks).
+export const dynamic = "force-dynamic";
+
 export default async function AdminOrdersPage() {
   const orders = await prisma.order.findMany({
     orderBy: { createdAt: "desc" },
