@@ -2,43 +2,30 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { Globe } from "lucide-react";
-import { Link, usePathname } from "@/i18n/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 export function LanguageSwitcher() {
   const t = useTranslations("LanguageSwitcher");
   const locale = useLocale();
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <Button variant="ghost" size="sm" aria-label={t("label")}>
-            <Globe className="size-4" />
-            <span className="uppercase">{locale}</span>
-          </Button>
-        }
-      />
-      <DropdownMenuContent align="end">
+    <div className="relative flex items-center">
+      <Globe className="pointer-events-none absolute left-2 size-4 text-muted-foreground" />
+      <select
+        aria-label={t("label")}
+        value={locale}
+        onChange={(e) => router.replace(pathname, { locale: e.target.value })}
+        className="h-7 cursor-pointer appearance-none rounded-md bg-transparent pl-7 pr-2 text-[0.8rem] font-medium uppercase outline-none hover:bg-muted"
+      >
         {routing.locales.map((loc) => (
-          <DropdownMenuItem
-            key={loc}
-            render={
-              <Link href={pathname} locale={loc}>
-                {t(loc)}
-              </Link>
-            }
-          />
+          <option key={loc} value={loc}>
+            {t(loc)}
+          </option>
         ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </select>
+    </div>
   );
 }
