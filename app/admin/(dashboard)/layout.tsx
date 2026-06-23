@@ -20,7 +20,7 @@ export default async function AdminDashboardLayout({
             <ShoppingBag className="size-4" />
           </span>
           <div>
-            <p className="text-sm font-bold leading-tight">Gravio</p>
+            <p className="text-sm font-bold leading-tight">Univa</p>
             <p className="text-xs leading-tight text-muted-foreground">Admin</p>
           </div>
         </Link>

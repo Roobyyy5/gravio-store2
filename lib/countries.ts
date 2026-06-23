@@ -1,8 +1,7 @@
 /**
  * ISO 3166-1 alpha-2 country codes -> English names.
- * Used to (a) restrict Stripe Checkout's shipping address collection and
- * (b) supply the full country name CJ's createOrderV2 requires alongside
- * the 2-letter shippingCountryCode.
+ * Supplies the full country name CJ's createOrderV2 requires alongside the
+ * 2-letter shippingCountryCode.
  */
 export const COUNTRIES: Record<string, string> = {
   UA: "Ukraine",
@@ -57,6 +56,3 @@ export const COUNTRIES: Record<string, string> = {
 export function getCountryName(code: string): string {
   return COUNTRIES[code.toUpperCase()] ?? code;
 }
-
-/** Country codes offered in Stripe Checkout's shipping address form. */
-export const SHIPPING_COUNTRIES = Object.keys(COUNTRIES) as Array<keyof typeof COUNTRIES>;

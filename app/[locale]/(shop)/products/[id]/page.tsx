@@ -1,9 +1,32 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { ProductVariantSelector } from "@/components/shop/product-variant-selector";
 import { stripHtml } from "@/lib/utils";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
+  const product = await prisma.product.findUnique({ where: { id: params.id } });
+  if (!product) return {};
+
+  const description = stripHtml(product.description ?? "").slice(0, 160);
+  const image = product.images[0];
+
+  return {
+    title: product.name,
+    description,
+    openGraph: {
+      title: product.name,
+      description,
+      images: image ? [{ url: image }] : undefined,
+    },
+  };
+}
 
 export default async function ProductDetailPage({ params }: { params: { id: string } }) {
   const t = await getTranslations("ProductDetail");

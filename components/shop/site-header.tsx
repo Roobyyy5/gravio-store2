@@ -16,6 +16,7 @@ export function SiteHeader() {
   const navLinks = [
     { href: "/", label: t("home") },
     { href: "/products", label: t("catalog") },
+    { href: "/track", label: t("track") },
   ];
 
   return (
@@ -26,7 +27,7 @@ export function SiteHeader() {
             <ShoppingBag className="size-4" />
           </span>
           <span className="bg-gradient-to-r from-primary to-foreground bg-clip-text text-transparent">
-            Gravio
+            Univa
           </span>
         </Link>
 

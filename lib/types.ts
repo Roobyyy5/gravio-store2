@@ -1,4 +1,4 @@
-/** Shape of Order.shippingAddress, captured from Stripe Checkout. */
+/** Shape of Order.shippingAddress, captured from PayPal checkout. */
 export interface ShippingAddress {
   line1: string;
   line2?: string;

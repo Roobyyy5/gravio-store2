@@ -38,6 +38,10 @@ export function startSyncJobs() {
     syncOrderStatuses().catch((error) => console.error("[sync] order sync failed", error));
   });
 
+  // node-cron never fires immediately on registration, so without this a
+  // fresh deploy/restart would serve stale CJ stock/price data for up to 6h.
+  syncStockAndPrices().catch((error) => console.error("[sync] initial stock sync failed", error));
+
   console.log("[sync] cron jobs registered");
 }
 

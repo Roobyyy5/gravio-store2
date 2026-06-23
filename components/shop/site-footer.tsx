@@ -14,7 +14,7 @@ export function SiteFooter() {
             <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/60 text-primary-foreground">
               <ShoppingBag className="size-3.5" />
             </span>
-            Gravio
+            Univa
           </Link>
           <p className="max-w-xs text-sm text-muted-foreground">{t("description")}</p>
         </div>

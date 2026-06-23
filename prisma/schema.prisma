@@ -58,7 +58,7 @@ model Order {
   totalCost       Float // собівартість
   totalPrice      Float // що заплатив клієнт
   trackingNumber  String?
-  stripeSessionId String?     @unique
+  paypalOrderId   String?     @unique
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 

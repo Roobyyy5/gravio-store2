@@ -23,7 +23,7 @@ function formatAddress(address: ShippingAddress): string {
   return lines.filter(Boolean).join("<br/>");
 }
 
-/** Sent once a Stripe Checkout session for the order completes successfully. */
+/** Sent once a PayPal order capture completes successfully. */
 export async function sendOrderConfirmationEmail(params: {
   to: string;
   orderId: string;

@@ -17,7 +17,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Gravio Store",
+  title: "Univa Store",
   description: "Automated dropshipping storefront powered by CJ Dropshipping",
 };
 

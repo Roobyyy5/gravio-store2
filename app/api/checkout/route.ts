@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import type Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
-import { stripe } from "@/lib/stripe";
-import { SHIPPING_COUNTRIES } from "@/lib/countries";
+import { paypalApi } from "@/lib/paypal";
 
 interface CheckoutItem {
   variantId: string;
@@ -38,7 +36,6 @@ export async function POST(request: NextRequest) {
   });
 
   const orderItems: { variantId: string; cjVariantId: string; quantity: number; price: number }[] = [];
-  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
   let totalCost = 0;
   let totalPrice = 0;
 
@@ -62,18 +59,6 @@ export async function POST(request: NextRequest) {
     });
     totalCost += variant.price * quantity;
     totalPrice += variant.salePrice * quantity;
-
-    lineItems.push({
-      quantity,
-      price_data: {
-        currency: "usd",
-        unit_amount: Math.round(variant.salePrice * 100),
-        product_data: {
-          name: variant.product.name,
-          images: variant.product.images.slice(0, 1),
-        },
-      },
-    });
   }
 
   const order = await prisma.order.create({
@@ -92,30 +77,19 @@ export async function POST(request: NextRequest) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? request.nextUrl.origin;
 
   try {
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items: lineItems,
-      success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/checkout/cancel`,
-      shipping_address_collection: {
-        // SHIPPING_COUNTRIES is string[] (COUNTRIES is keyed as Record<string, string>),
-        // but every key is one of the ISO codes Stripe's AllowedCountry union accepts.
-        allowed_countries: SHIPPING_COUNTRIES as Stripe.Checkout.SessionCreateParams.ShippingAddressCollection.AllowedCountry[],
-      },
-      phone_number_collection: { enabled: true },
-      metadata: { orderId: order.id },
+    const { id, approveUrl } = await paypalApi.createOrder({
+      orderId: order.id,
+      totalPrice,
+      returnUrl: `${baseUrl}/checkout/success`,
+      cancelUrl: `${baseUrl}/checkout/cancel`,
     });
-
-    if (!session.url) {
-      throw new Error("Stripe did not return a checkout URL");
-    }
 
     await prisma.order.update({
       where: { id: order.id },
-      data: { stripeSessionId: session.id },
+      data: { paypalOrderId: id },
     });
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ url: approveUrl });
   } catch (error) {
     await prisma.order.delete({ where: { id: order.id } });
     return NextResponse.json(

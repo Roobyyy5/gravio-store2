@@ -51,7 +51,7 @@ function LoginForm() {
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Admin sign in</CardTitle>
-          <CardDescription>Gravio Store administration</CardDescription>
+          <CardDescription>Univa Store administration</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">

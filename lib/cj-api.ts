@@ -6,8 +6,13 @@ const BASE_URL = "https://developers.cjdropshipping.com/api2.0/v1";
 
 // CJ enforces QPS = 1 (max 1 request/second) across the v2 API. A tiny
 // serialized queue keeps every call (auth, catalog, orders) under that
-// limit without the caller having to think about it.
-const MIN_INTERVAL_MS = 1000;
+// limit without the caller having to think about it. The interval is kept
+// a bit above 1000ms as a safety margin against clock/event-loop jitter.
+const MIN_INTERVAL_MS = 1200;
+
+/** CJ's error code for "Too Many Requests, QPS limit is 1 time/1second". */
+const QPS_LIMIT_CODE = 1600200;
+const MAX_QPS_RETRIES = 4;
 let lastRequestAt = 0;
 let requestQueue: Promise<unknown> = Promise.resolve();
 
@@ -78,27 +83,38 @@ async function cjFetch<T>(
     headers["CJ-Access-Token"] = await ensureAccessToken();
   }
 
-  const response = await throttle(() =>
-    fetch(url, {
-      method,
-      headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-      cache: "no-store",
-    })
-  );
+  for (let attempt = 0; attempt <= MAX_QPS_RETRIES; attempt++) {
+    const response = await throttle(() =>
+      fetch(url, {
+        method,
+        headers,
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+        cache: "no-store",
+      })
+    );
 
-  let json: CJEnvelope<T>;
-  try {
-    json = (await response.json()) as CJEnvelope<T>;
-  } catch {
-    throw new CJApiError(`CJ API returned a non-JSON response for ${path} (HTTP ${response.status})`);
+    let json: CJEnvelope<T>;
+    try {
+      json = (await response.json()) as CJEnvelope<T>;
+    } catch {
+      throw new CJApiError(`CJ API returned a non-JSON response for ${path} (HTTP ${response.status})`);
+    }
+
+    if (!response.ok || json.code !== 200 || json.result !== true) {
+      // CJ's QPS limiter occasionally trips even when our own throttle is
+      // respected (clock jitter, shared account-level limits). Back off
+      // and retry instead of failing the whole sync run over a blip.
+      if (json.code === QPS_LIMIT_CODE && attempt < MAX_QPS_RETRIES) {
+        await sleep(MIN_INTERVAL_MS * (attempt + 2));
+        continue;
+      }
+      throw new CJApiError(json.message ?? `CJ API request failed: ${path}`, json.code);
+    }
+
+    return json.data;
   }
 
-  if (!response.ok || json.code !== 200 || json.result !== true) {
-    throw new CJApiError(json.message ?? `CJ API request failed: ${path}`, json.code);
-  }
-
-  return json.data;
+  throw new CJApiError(`CJ API request failed after retries: ${path}`);
 }
 
 // ---------------------------------------------------------------------------
@@ -438,6 +454,8 @@ export interface CJOrderDetail {
   trackingUrl?: string;
   orderAmount?: number | string;
   postageAmount?: number | string;
+  /** Set once CJ has actually charged the order (e.g. via payType 2 balance deduction). */
+  paymentDate?: string | null;
 }
 
 /** `orderId` accepts either our internal order number or CJ's own order id. */

@@ -1,8 +1,35 @@
 {
+  "Metadata": {
+    "title": "Univa Store",
+    "description": "Carefully curated products shipped worldwide. New arrivals are added automatically every day."
+  },
   "Nav": {
     "home": "Home",
     "catalog": "Catalog",
-    "cart": "Cart"
+    "cart": "Cart",
+    "track": "Track order"
+  },
+  "TrackPage": {
+    "title": "Order status",
+    "description": "Enter your order number and the email you paid with to check its status.",
+    "orderId": "Order number",
+    "orderIdPlaceholder": "e.g. cmqp7ktd90000ug0shqfo5tpm",
+    "email": "Email",
+    "checkStatus": "Check status",
+    "checking": "Checking...",
+    "notFound": "Order not found. Double-check the number and email.",
+    "status": "Status",
+    "trackingNumber": "Tracking number",
+    "total": "Total",
+    "statuses": {
+      "PENDING": "Awaiting payment",
+      "PAID": "Paid",
+      "PROCESSING": "Processing",
+      "SHIPPED": "Shipped",
+      "DELIVERED": "Delivered",
+      "CANCELLED": "Cancelled",
+      "REFUNDED": "Refunded"
+    }
   },
   "Footer": {
     "description": "Carefully curated products, shipped worldwide. New arrivals are added automatically every day.",
@@ -10,11 +37,11 @@
     "home": "Home",
     "catalog": "Catalog",
     "cart": "Cart",
-    "whyUs": "Why Gravio",
+    "whyUs": "Why Univa",
     "shipping": "Worldwide shipping on every order",
-    "secureCheckout": "Secure checkout powered by Stripe",
+    "secureCheckout": "Secure checkout powered by PayPal",
     "freshPicks": "Fresh picks added automatically",
-    "copyright": "© {year} Gravio Store. All rights reserved."
+    "copyright": "© {year} Univa Store. All rights reserved."
   },
   "HomePage": {
     "badge": "New arrivals added every day",
@@ -39,8 +66,11 @@
     "title": "Catalog",
     "count": "{count, plural, one {# product} other {# products}}",
     "inCategory": " in \"{category}\"",
+    "forQuery": " for \"{query}\"",
     "all": "All",
-    "empty": "No products available yet."
+    "empty": "No products available yet.",
+    "searchPlaceholder": "Search products...",
+    "search": "Search"
   },
   "ProductDetail": {
     "noImage": "No image"
@@ -78,7 +108,12 @@
   "CheckoutSuccess": {
     "title": "Thank you for your order!",
     "description": "We have received your payment and will start processing your order shortly. A confirmation email is on its way.",
-    "continueShopping": "Continue shopping"
+    "continueShopping": "Continue shopping",
+    "processingTitle": "Confirming your payment...",
+    "processingDescription": "Please wait while we finish processing your PayPal payment.",
+    "errorTitle": "We couldn't confirm your payment",
+    "errorDescription": "Something went wrong confirming the payment. If you were charged, please contact us.",
+    "backToCart": "Back to cart"
   },
   "CheckoutCancel": {
     "title": "Checkout cancelled",
