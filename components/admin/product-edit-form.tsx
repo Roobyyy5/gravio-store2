@@ -58,27 +58,27 @@ export function ProductEditForm({
           })),
         }),
       });
-      if (!res.ok) throw new Error("Save failed");
-      toast.success("Product updated");
+      if (!res.ok) throw new Error("Не вдалося зберегти");
+      toast.success("Товар оновлено");
       router.refresh();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Save failed");
+      toast.error(error instanceof Error ? error.message : "Не вдалося зберегти");
     } finally {
       setSaving(false);
     }
   }
 
   async function remove() {
-    if (!confirm("Delete this product and all its variants?")) return;
+    if (!confirm("Видалити цей товар і всі його варіанти?")) return;
     setDeleting(true);
     try {
       const res = await fetch(`/api/admin/products/${product.id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Delete failed");
-      toast.success("Product deleted");
+      if (!res.ok) throw new Error("Не вдалося видалити");
+      toast.success("Товар видалено");
       router.push("/admin/products");
       router.refresh();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Delete failed");
+      toast.error(error instanceof Error ? error.message : "Не вдалося видалити");
       setDeleting(false);
     }
   }
@@ -87,18 +87,18 @@ export function ProductEditForm({
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-2">
         <Switch checked={isActive} onCheckedChange={setIsActive} id="active" />
-        <Label htmlFor="active">Visible in storefront</Label>
+        <Label htmlFor="active">Видимий у магазині</Label>
       </div>
 
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>SKU / Attributes</TableHead>
-              <TableHead>Cost</TableHead>
-              <TableHead>Sale price</TableHead>
-              <TableHead>Margin</TableHead>
-              <TableHead>Stock</TableHead>
+              <TableHead>Артикул / Атрибути</TableHead>
+              <TableHead>Собівартість</TableHead>
+              <TableHead>Ціна продажу</TableHead>
+              <TableHead>Маржа</TableHead>
+              <TableHead>На складі</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -127,7 +127,7 @@ export function ProductEditForm({
                       className="w-28"
                     />
                     <p className="mt-1 text-xs text-muted-foreground">
-                      min ${minPrices[variant.id].toFixed(2)}
+                      мін ${minPrices[variant.id].toFixed(2)}
                     </p>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
@@ -143,10 +143,10 @@ export function ProductEditForm({
 
       <div className="flex justify-between">
         <Button variant="destructive" onClick={remove} disabled={deleting}>
-          {deleting ? "Deleting..." : "Delete product"}
+          {deleting ? "Видалення..." : "Видалити товар"}
         </Button>
         <Button onClick={save} disabled={saving}>
-          {saving ? "Saving..." : "Save changes"}
+          {saving ? "Збереження..." : "Зберегти зміни"}
         </Button>
       </div>
     </div>

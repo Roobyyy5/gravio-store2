@@ -27,8 +27,8 @@ export default async function AdminProductsPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Products</h1>
-        <Button render={<Link href="/admin/products/import">Import from CJ</Link>} nativeButton={false} />
+        <h1 className="text-2xl font-bold">Товари</h1>
+        <Button render={<Link href="/admin/products/import">Імпорт з CJ</Link>} nativeButton={false} />
       </div>
 
       <div className="rounded-md border">
@@ -36,12 +36,12 @@ export default async function AdminProductsPage() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-16"></TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Variants</TableHead>
-              <TableHead>Stock</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Active</TableHead>
+              <TableHead>Назва</TableHead>
+              <TableHead>Категорія</TableHead>
+              <TableHead>Варіанти</TableHead>
+              <TableHead>На складі</TableHead>
+              <TableHead>Ціна</TableHead>
+              <TableHead>Активний</TableHead>
               <TableHead className="w-12"></TableHead>
             </TableRow>
           </TableHeader>
@@ -49,7 +49,7 @@ export default async function AdminProductsPage() {
             {products.length === 0 && (
               <TableRow>
                 <TableCell colSpan={8} className="text-center text-muted-foreground">
-                  No products yet. Import some from CJ Dropshipping.
+                  Поки немає товарів. Імпортуйте їх з CJ Dropshipping.
                 </TableCell>
               </TableRow>
             )}
@@ -84,7 +84,7 @@ export default async function AdminProductsPage() {
                     {totalStock > 0 ? (
                       totalStock
                     ) : (
-                      <Badge variant="destructive">Out of stock</Badge>
+                      <Badge variant="destructive">Немає в наявності</Badge>
                     )}
                   </TableCell>
                   <TableCell>

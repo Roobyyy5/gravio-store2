@@ -38,7 +38,7 @@ function LoginForm() {
     setLoading(false);
 
     if (result?.error) {
-      setError("Invalid email or password");
+      setError("Неправильний email або пароль");
       return;
     }
 
@@ -50,8 +50,8 @@ function LoginForm() {
     <main className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Admin sign in</CardTitle>
-          <CardDescription>Univa Store administration</CardDescription>
+          <CardTitle>Вхід в адмінку</CardTitle>
+          <CardDescription>Адміністрування Univa Store</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -67,7 +67,7 @@ function LoginForm() {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Пароль</Label>
               <Input
                 id="password"
                 type="password"
@@ -79,7 +79,7 @@ function LoginForm() {
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
             <Button type="submit" disabled={loading} className="w-full">
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? "Вхід..." : "Увійти"}
             </Button>
           </form>
         </CardContent>

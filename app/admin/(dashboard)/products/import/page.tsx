@@ -4,11 +4,12 @@ export default function AdminImportPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold">Import from CJ Dropshipping</h1>
+        <h1 className="text-2xl font-bold">Імпорт з CJ Dropshipping</h1>
         <p className="text-sm text-muted-foreground">
-          Search the CJ catalog by product name or category id, then import products one by one,
-          select a batch to import, or use auto-import to walk through every page of results.
-          Already-imported products are marked and skipped automatically.
+          Шукайте товари в каталозі CJ за назвою або ID категорії, потім імпортуйте їх по одному,
+          оберіть кілька для пакетного імпорту, або скористайтесь автоімпортом, щоб пройти всі сторінки
+          результатів. Підтягуються лише товари, що реально є в наявності на CJ — вже імпортовані
+          товари позначаються і автоматично пропускаються.
         </p>
       </div>
       <CjImportPanel />

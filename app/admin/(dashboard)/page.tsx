@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SyncButtons } from "@/components/admin/sync-buttons";
 import { OrderStatus } from "@prisma/client";
 import { cn } from "@/lib/utils";
+import { ORDER_STATUS_LABELS } from "@/lib/order-status-labels";
 import { Clock, Layers, Package, ShoppingCart } from "lucide-react";
 
 // Reads live DB stats, so it must not be statically generated at build time
@@ -61,7 +62,7 @@ export default async function AdminDashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <h1 className="text-2xl font-bold">Панель керування</h1>
         <SyncButtons />
       </div>
 
@@ -72,9 +73,9 @@ export default async function AdminDashboardPage() {
               <Package className="size-5" />
             </span>
             <div>
-              <p className="text-sm text-muted-foreground">Products</p>
+              <p className="text-sm text-muted-foreground">Товари</p>
               <p className="text-2xl font-bold">{stats.productCount}</p>
-              <p className="text-xs text-muted-foreground">{stats.activeProductCount} active</p>
+              <p className="text-xs text-muted-foreground">{stats.activeProductCount} активних</p>
             </div>
           </CardContent>
         </Card>
@@ -84,9 +85,9 @@ export default async function AdminDashboardPage() {
               <Layers className="size-5" />
             </span>
             <div>
-              <p className="text-sm text-muted-foreground">Variants</p>
+              <p className="text-sm text-muted-foreground">Варіанти</p>
               <p className="text-2xl font-bold">{stats.variantCount}</p>
-              <p className="text-xs text-muted-foreground">{stats.outOfStockCount} out of stock</p>
+              <p className="text-xs text-muted-foreground">{stats.outOfStockCount} немає в наявності</p>
             </div>
           </CardContent>
         </Card>
@@ -96,10 +97,10 @@ export default async function AdminDashboardPage() {
               <ShoppingCart className="size-5" />
             </span>
             <div>
-              <p className="text-sm text-muted-foreground">Orders</p>
+              <p className="text-sm text-muted-foreground">Замовлення</p>
               <p className="text-2xl font-bold">{stats.totalOrders}</p>
               <p className="text-xs text-muted-foreground">
-                {stats.ordersByStatus.PENDING ?? 0} pending
+                {stats.ordersByStatus.PENDING ?? 0} очікують оплати
               </p>
             </div>
           </CardContent>
@@ -110,13 +111,13 @@ export default async function AdminDashboardPage() {
               <Clock className="size-5" />
             </span>
             <div>
-              <p className="text-sm text-muted-foreground">In progress</p>
+              <p className="text-sm text-muted-foreground">В роботі</p>
               <p className="text-2xl font-bold">
                 {(stats.ordersByStatus.PAID ?? 0) +
                   (stats.ordersByStatus.PROCESSING ?? 0) +
                   (stats.ordersByStatus.SHIPPED ?? 0)}
               </p>
-              <p className="text-xs text-muted-foreground">paid, processing or shipped</p>
+              <p className="text-xs text-muted-foreground">оплачені, в обробці чи відправлені</p>
             </div>
           </CardContent>
         </Card>
@@ -125,7 +126,7 @@ export default async function AdminDashboardPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            Orders by status
+            Замовлення за статусом
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -136,7 +137,7 @@ export default async function AdminDashboardPage() {
                 className={cn("rounded-lg border p-3 text-center", STATUS_STYLES[status])}
               >
                 <p className="text-lg font-bold">{stats.ordersByStatus[status] ?? 0}</p>
-                <p className="text-xs font-medium">{status}</p>
+                <p className="text-xs font-medium">{ORDER_STATUS_LABELS[status]}</p>
               </div>
             ))}
           </div>

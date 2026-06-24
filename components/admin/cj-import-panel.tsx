@@ -44,6 +44,7 @@ export function CjImportPanel() {
   const [total, setTotal] = useState(0);
   const [results, setResults] = useState<CJProductListItem[]>([]);
   const [importedIds, setImportedIds] = useState<Set<string>>(new Set());
+  const [skippedIds, setSkippedIds] = useState<Set<string>>(new Set());
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [hasSearched, setHasSearched] = useState(false);
   const [searching, setSearching] = useState(false);
@@ -73,7 +74,7 @@ export function CjImportPanel() {
 
       const res = await fetch(`/api/admin/cj/search?${params.toString()}`);
       const data: CjSearchResponse = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Search failed");
+      if (!res.ok) throw new Error(data.error ?? "Помилка пошуку");
 
       setResults(data.list ?? []);
       setTotal(data.total ?? 0);
@@ -83,7 +84,7 @@ export function CjImportPanel() {
       setHasSearched(true);
       return data;
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Search failed");
+      toast.error(error instanceof Error ? error.message : "Помилка пошуку");
       return null;
     } finally {
       setSearching(false);
@@ -95,7 +96,7 @@ export function CjImportPanel() {
     if (hasSearched) runSearch(1, size);
   }
 
-  async function importOne(pid: string): Promise<boolean> {
+  async function importOne(pid: string): Promise<"imported" | "skipped" | "failed"> {
     try {
       const res = await fetch("/api/admin/cj/import", {
         method: "POST",
@@ -103,19 +104,24 @@ export function CjImportPanel() {
         body: JSON.stringify({ pid }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Import failed");
+      if (!res.ok) throw new Error(data.error ?? "Помилка імпорту");
+      if (data.skipped) {
+        setSkippedIds((prev) => new Set(prev).add(pid));
+        return "skipped";
+      }
       setImportedIds((prev) => new Set(prev).add(pid));
-      return true;
+      return "imported";
     } catch (error) {
-      toast.error(`${pid}: ${error instanceof Error ? error.message : "Import failed"}`);
-      return false;
+      toast.error(`${pid}: ${error instanceof Error ? error.message : "Помилка імпорту"}`);
+      return "failed";
     }
   }
 
   async function importProduct(pid: string) {
     setImportingPid(pid);
-    const ok = await importOne(pid);
-    if (ok) toast.success("Product imported");
+    const result = await importOne(pid);
+    if (result === "imported") toast.success("Товар імпортовано");
+    if (result === "skipped") toast.info("Немає в наявності на CJ — не імпортовано");
     setImportingPid(null);
   }
 
@@ -126,13 +132,17 @@ export function CjImportPanel() {
     if (pids.length === 0) return;
 
     setBulkProgress({ done: 0, total: pids.length });
+    let imported = 0;
+    let skipped = 0;
     for (let i = 0; i < pids.length; i++) {
-      await importOne(pids[i]);
+      const result = await importOne(pids[i]);
+      if (result === "imported") imported++;
+      if (result === "skipped") skipped++;
       setBulkProgress({ done: i + 1, total: pids.length });
     }
     setSelected(new Set());
     setBulkProgress(null);
-    toast.success("Selected products imported");
+    toast.success(`Імпортовано: ${imported}${skipped > 0 ? `, немає в наявності: ${skipped}` : ""}`);
   }
 
   async function autoImportAll() {
@@ -141,6 +151,8 @@ export function CjImportPanel() {
 
     let page = 1;
     let done = 0;
+    let imported = 0;
+    let skipped = 0;
 
     try {
       while (!cancelAutoRef.current && done < autoLimit) {
@@ -148,12 +160,14 @@ export function CjImportPanel() {
         if (!data?.list?.length) break;
 
         const knownTotal = Math.min(data.total ?? autoLimit, autoLimit);
-        const imported = new Set(data.importedIds ?? []);
+        const alreadyImported = new Set(data.importedIds ?? []);
 
         for (const item of data.list) {
           if (cancelAutoRef.current || done >= autoLimit) break;
-          if (!imported.has(item.pid)) {
-            await importOne(item.pid);
+          if (!alreadyImported.has(item.pid)) {
+            const result = await importOne(item.pid);
+            if (result === "imported") imported++;
+            if (result === "skipped") skipped++;
           }
           done++;
           setAutoProgress({ done, total: knownTotal, page });
@@ -163,9 +177,10 @@ export function CjImportPanel() {
         if (page * pageSize >= (data.total ?? 0)) break;
         page++;
       }
-      toast.success(cancelAutoRef.current ? "Auto-import stopped" : "Auto-import finished");
+      const summary = `імпортовано: ${imported}, немає в наявності: ${skipped}`;
+      toast.success(cancelAutoRef.current ? `Автоімпорт зупинено (${summary})` : `Автоімпорт завершено (${summary})`);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Auto-import failed");
+      toast.error(error instanceof Error ? error.message : "Помилка автоімпорту");
     } finally {
       setAutoProgress(null);
     }
@@ -188,9 +203,9 @@ export function CjImportPanel() {
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-end gap-2">
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground">Product name</label>
+          <label className="text-xs text-muted-foreground">Назва товару</label>
           <Input
-            placeholder="e.g. wireless earbuds"
+            placeholder="напр. бездротові навушники"
             value={productName}
             onChange={(e) => setProductName(e.target.value)}
             className="w-56"
@@ -198,9 +213,9 @@ export function CjImportPanel() {
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground">Category id</label>
+          <label className="text-xs text-muted-foreground">ID категорії</label>
           <Input
-            placeholder="optional"
+            placeholder="необов'язково"
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
             className="w-48"
@@ -208,7 +223,7 @@ export function CjImportPanel() {
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-muted-foreground">Page size</label>
+          <label className="text-xs text-muted-foreground">Розмір сторінки</label>
           <div className="flex gap-1">
             {PAGE_SIZE_OPTIONS.map((size) => (
               <Button
@@ -227,10 +242,10 @@ export function CjImportPanel() {
         <Button onClick={() => runSearch(1)} disabled={busy}>
           {searching ? (
             <>
-              <Loader2 className="animate-spin" /> Searching...
+              <Loader2 className="animate-spin" /> Пошук...
             </>
           ) : (
-            "Search CJ catalog"
+            "Шукати в каталозі CJ"
           )}
         </Button>
       </div>
@@ -243,20 +258,20 @@ export function CjImportPanel() {
             disabled={busy || selectableCount === 0}
           />
           <span className="text-sm text-muted-foreground">
-            {selected.size > 0 ? `${selected.size} selected` : "Select all on this page"}
+            {selected.size > 0 ? `Обрано ${selected.size}` : "Обрати всі на цій сторінці"}
           </span>
           <Button size="sm" onClick={importSelected} disabled={busy || selected.size === 0}>
             {bulkProgress
-              ? `Importing ${bulkProgress.done}/${bulkProgress.total}...`
-              : `Import selected (${selected.size})`}
+              ? `Імпорт ${bulkProgress.done}/${bulkProgress.total}...`
+              : `Імпортувати обрані (${selected.size})`}
           </Button>
 
           <div className="ml-auto flex items-center gap-2">
             {autoProgress ? (
               <>
                 <span className="text-sm text-muted-foreground">
-                  Auto-import: page {autoProgress.page} &middot; {autoProgress.done}/
-                  {autoProgress.total} processed
+                  Автоімпорт: сторінка {autoProgress.page} &middot; опрацьовано {autoProgress.done}/
+                  {autoProgress.total}
                 </span>
                 <Button
                   size="sm"
@@ -265,7 +280,7 @@ export function CjImportPanel() {
                     cancelAutoRef.current = true;
                   }}
                 >
-                  <X /> Stop
+                  <X /> Зупинити
                 </Button>
               </>
             ) : (
@@ -280,7 +295,7 @@ export function CjImportPanel() {
                   disabled={busy}
                 />
                 <Button size="sm" variant="secondary" onClick={autoImportAll} disabled={busy}>
-                  <Sparkles /> Auto-import
+                  <Sparkles /> Автоімпорт
                 </Button>
               </>
             )}
@@ -295,15 +310,16 @@ export function CjImportPanel() {
               <TableRow>
                 <TableHead className="w-10"></TableHead>
                 <TableHead className="w-16"></TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>SKU</TableHead>
-                <TableHead>Price</TableHead>
+                <TableHead>Назва</TableHead>
+                <TableHead>Артикул</TableHead>
+                <TableHead>Ціна</TableHead>
                 <TableHead className="w-32"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {results.map((item) => {
                 const isImported = importedIds.has(item.pid);
+                const isSkipped = skippedIds.has(item.pid);
                 return (
                   <TableRow key={item.pid}>
                     <TableCell>
@@ -339,22 +355,27 @@ export function CjImportPanel() {
                       {isImported ? (
                         <Badge variant="secondary" className="gap-1">
                           <CheckCircle2 />
-                          Imported
+                          Імпортовано
                         </Badge>
                       ) : (
-                        <Button
-                          size="sm"
-                          disabled={busy || importingPid === item.pid}
-                          onClick={() => importProduct(item.pid)}
-                        >
-                          {importingPid === item.pid ? (
-                            <>
-                              <Loader2 className="animate-spin" /> Importing...
-                            </>
-                          ) : (
-                            "Import"
+                        <div className="flex flex-col items-start gap-1">
+                          {isSkipped && (
+                            <Badge variant="destructive">Немає в наявності</Badge>
                           )}
-                        </Button>
+                          <Button
+                            size="sm"
+                            disabled={busy || importingPid === item.pid}
+                            onClick={() => importProduct(item.pid)}
+                          >
+                            {importingPid === item.pid ? (
+                              <>
+                                <Loader2 className="animate-spin" /> Імпорт...
+                              </>
+                            ) : (
+                              "Імпортувати"
+                            )}
+                          </Button>
+                        </div>
                       )}
                     </TableCell>
                   </TableRow>
@@ -367,13 +388,13 @@ export function CjImportPanel() {
 
       {hasSearched && results.length === 0 && !searching && (
         <p className="rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground">
-          No products found. Try a different search term or category id.
+          Товарів не знайдено. Спробуйте інший запит або ID категорії.
         </p>
       )}
 
       {hasSearched && total > 0 && (
         <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>{total.toLocaleString()} products found</span>
+          <span>Знайдено товарів: {total.toLocaleString()}</span>
           <div className="flex items-center gap-2">
             <Button
               size="icon-sm"
@@ -384,7 +405,7 @@ export function CjImportPanel() {
               <ChevronLeft />
             </Button>
             <span>
-              Page {pageNum} of {totalPages.toLocaleString()}
+              Сторінка {pageNum} з {totalPages.toLocaleString()}
             </span>
             <Button
               size="icon-sm"

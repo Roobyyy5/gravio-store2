@@ -13,6 +13,11 @@ export async function POST(request: NextRequest) {
     const detail = await cjApi.getProductDetail(pid);
     const mapped = mapProductDetailToInternal(detail);
 
+    const totalStock = mapped.variants.reduce((sum, v) => sum + v.stock, 0);
+    if (totalStock === 0) {
+      return NextResponse.json({ ok: false, skipped: true, reason: "out_of_stock" });
+    }
+
     const product = await prisma.product.upsert({
       where: { cjProductId: mapped.cjProductId },
       update: {
@@ -32,7 +37,11 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    for (const variant of mapped.variants) {
+    // Only keep variants that are actually purchasable - a size/color the
+    // supplier has zero of would otherwise show up as a dead option.
+    const inStockVariants = mapped.variants.filter((v) => v.stock > 0);
+
+    for (const variant of inStockVariants) {
       await prisma.variant.upsert({
         where: { cjVariantId: variant.cjVariantId },
         update: {

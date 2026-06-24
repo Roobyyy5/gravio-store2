@@ -27,11 +27,11 @@ export function OrderActions({
           : `/api/admin/orders/${orderId}/sync`;
       const res = await fetch(path, { method: "POST" });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Action failed");
-      toast.success(action === "create" ? "CJ order created" : "Order synced");
+      if (!res.ok) throw new Error(data.error ?? "Дія не виконана");
+      toast.success(action === "create" ? "Замовлення на CJ створено" : "Статус синхронізовано");
       router.refresh();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Action failed");
+      toast.error(error instanceof Error ? error.message : "Дія не виконана");
     } finally {
       setPending(null);
     }
@@ -43,7 +43,7 @@ export function OrderActions({
     <div className="flex gap-2">
       {canCreate && (
         <Button size="sm" onClick={() => run("create")} disabled={pending !== null}>
-          {pending === "create" ? "Creating..." : "Create CJ order"}
+          {pending === "create" ? "Створення..." : "Створити замовлення на CJ"}
         </Button>
       )}
       {hasCjOrder && (
@@ -53,7 +53,7 @@ export function OrderActions({
           onClick={() => run("sync")}
           disabled={pending !== null}
         >
-          {pending === "sync" ? "Syncing..." : "Sync status now"}
+          {pending === "sync" ? "Синхронізація..." : "Синхронізувати статус зараз"}
         </Button>
       )}
     </div>

@@ -1,10 +1,22 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import DOMPurify from "isomorphic-dompurify";
 import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { ProductVariantSelector } from "@/components/shop/product-variant-selector";
 import { stripHtml } from "@/lib/utils";
+
+// CJ embeds product photos and the size chart as <img> tags directly inside
+// the description HTML - there's no separate "size chart" field in their
+// API, so we sanitize and render the description as HTML instead of
+// stripping it to plain text, otherwise that imagery is lost.
+function sanitizeDescription(html: string): string {
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ["p", "br", "img", "strong", "em", "b", "i", "ul", "li", "span", "div"],
+    ALLOWED_ATTR: ["src", "alt", "style"],
+  });
+}
 
 export async function generateMetadata({
   params,
@@ -38,7 +50,7 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
 
   if (!product) notFound();
 
-  const description = stripHtml(product.description ?? "");
+  const descriptionHtml = product.description ? sanitizeDescription(product.description) : "";
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -79,8 +91,11 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
             }))}
           />
 
-          {description && (
-            <p className="whitespace-pre-wrap text-sm text-muted-foreground">{description}</p>
+          {descriptionHtml && (
+            <div
+              className="flex flex-col gap-3 text-sm text-muted-foreground [&_img]:mx-auto [&_img]:max-w-full [&_img]:rounded-lg"
+              dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+            />
           )}
         </div>
       </div>

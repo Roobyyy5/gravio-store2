@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Download, LayoutDashboard, Package, ShoppingCart } from "lucide-react";
+import { Download, ExternalLink, LayoutDashboard, Package, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/products", label: "Products", icon: Package },
-  { href: "/admin/products/import", label: "Import from CJ", icon: Download },
-  { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
+  { href: "/admin", label: "Панель керування", icon: LayoutDashboard },
+  { href: "/admin/products", label: "Товари", icon: Package },
+  { href: "/admin/products/import", label: "Імпорт з CJ", icon: Download },
+  { href: "/admin/orders", label: "Замовлення", icon: ShoppingCart },
 ];
 
 function isActiveLink(pathname: string, href: string): boolean {
@@ -45,6 +45,15 @@ export function AdminNav() {
           </Link>
         );
       })}
+      <a
+        href="/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+      >
+        <ExternalLink className="h-4 w-4" />
+        Перейти на сайт
+      </a>
     </nav>
   );
 }

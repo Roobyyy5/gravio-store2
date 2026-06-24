@@ -25,11 +25,11 @@ export function ProductActiveToggle({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isActive: value }),
       });
-      if (!res.ok) throw new Error("Update failed");
+      if (!res.ok) throw new Error("Не вдалося оновити");
       router.refresh();
     } catch (error) {
       setChecked(!value);
-      toast.error(error instanceof Error ? error.message : "Update failed");
+      toast.error(error instanceof Error ? error.message : "Не вдалося оновити");
     } finally {
       setPending(false);
     }

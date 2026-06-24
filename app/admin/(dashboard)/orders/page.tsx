@@ -22,25 +22,25 @@ export default async function AdminOrdersPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold">Orders</h1>
+      <h1 className="text-2xl font-bold">Замовлення</h1>
 
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Order</TableHead>
-              <TableHead>Customer</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead>Tracking</TableHead>
-              <TableHead>Created</TableHead>
+              <TableHead>Замовлення</TableHead>
+              <TableHead>Клієнт</TableHead>
+              <TableHead>Статус</TableHead>
+              <TableHead>Сума</TableHead>
+              <TableHead>Трекінг</TableHead>
+              <TableHead>Створено</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {orders.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6} className="text-center text-muted-foreground">
-                  No orders yet.
+                  Замовлень ще немає.
                 </TableCell>
               </TableRow>
             )}

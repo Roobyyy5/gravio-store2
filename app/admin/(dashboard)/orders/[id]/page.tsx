@@ -27,7 +27,7 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Order {order.id}</h1>
+          <h1 className="text-2xl font-bold">Замовлення {order.id}</h1>
           <p className="text-sm text-muted-foreground">
             {order.createdAt.toISOString().slice(0, 16).replace("T", " ")}
           </p>
@@ -38,7 +38,7 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">Customer</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Клієнт</CardTitle>
           </CardHeader>
           <CardContent className="text-sm">
             <p className="font-medium">{order.customerName}</p>
@@ -50,7 +50,7 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Shipping address
+              Адреса доставки
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm">
@@ -67,11 +67,11 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-medium text-muted-foreground">CJ fulfillment</CardTitle>
+          <CardTitle className="text-sm font-medium text-muted-foreground">Виконання на CJ</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-3 text-sm">
-          <p>CJ order number: {order.cjOrderNumber ?? "not created yet"}</p>
-          <p>Tracking number: {order.trackingNumber ?? "—"}</p>
+          <p>Номер замовлення CJ: {order.cjOrderNumber ?? "ще не створено"}</p>
+          <p>Номер відстеження: {order.trackingNumber ?? "—"}</p>
           <OrderActions
             orderId={order.id}
             status={order.status}
@@ -84,11 +84,11 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Product</TableHead>
-              <TableHead>SKU</TableHead>
-              <TableHead>Qty</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Subtotal</TableHead>
+              <TableHead>Товар</TableHead>
+              <TableHead>Артикул</TableHead>
+              <TableHead>К-сть</TableHead>
+              <TableHead>Ціна</TableHead>
+              <TableHead>Сума</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -109,11 +109,11 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
 
       <div className="flex justify-end gap-8 text-sm">
         <div className="text-right">
-          <p className="text-muted-foreground">Cost</p>
+          <p className="text-muted-foreground">Собівартість</p>
           <p className="font-medium">${order.totalCost.toFixed(2)}</p>
         </div>
         <div className="text-right">
-          <p className="text-muted-foreground">Total paid</p>
+          <p className="text-muted-foreground">Сплачено</p>
           <p className="text-lg font-bold">${order.totalPrice.toFixed(2)}</p>
         </div>
       </div>
