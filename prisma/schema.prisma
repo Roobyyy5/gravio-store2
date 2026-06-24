@@ -17,6 +17,8 @@ model Product {
   images       String[]
   categoryId   String
   categoryName String?
+  /** From CJ's product list search results - null means unknown (e.g. imported before this field existed). */
+  isFreeShipping Boolean?
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

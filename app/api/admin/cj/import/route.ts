@@ -4,7 +4,9 @@ import { cjApi, mapProductDetailToInternal } from "@/lib/cj-api";
 import { Prisma } from "@prisma/client";
 
 export async function POST(request: NextRequest) {
-  const { pid } = await request.json().catch(() => ({ pid: undefined }));
+  const { pid, isFreeShipping } = await request
+    .json()
+    .catch(() => ({ pid: undefined, isFreeShipping: undefined }));
   if (!pid || typeof pid !== "string") {
     return NextResponse.json({ error: "pid is required" }, { status: 400 });
   }
@@ -26,6 +28,7 @@ export async function POST(request: NextRequest) {
         images: mapped.images,
         categoryId: mapped.categoryId,
         categoryName: detail.categoryName ?? null,
+        ...(typeof isFreeShipping === "boolean" ? { isFreeShipping } : {}),
       },
       create: {
         cjProductId: mapped.cjProductId,
@@ -34,6 +37,7 @@ export async function POST(request: NextRequest) {
         images: mapped.images,
         categoryId: mapped.categoryId,
         categoryName: detail.categoryName ?? null,
+        isFreeShipping: typeof isFreeShipping === "boolean" ? isFreeShipping : null,
       },
     });
 

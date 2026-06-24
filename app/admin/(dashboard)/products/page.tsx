@@ -40,6 +40,7 @@ export default async function AdminProductsPage() {
               <TableHead>Категорія</TableHead>
               <TableHead>Варіанти</TableHead>
               <TableHead>На складі</TableHead>
+              <TableHead>Доставка</TableHead>
               <TableHead>Ціна</TableHead>
               <TableHead>Активний</TableHead>
               <TableHead className="w-12"></TableHead>
@@ -48,7 +49,7 @@ export default async function AdminProductsPage() {
           <TableBody>
             {products.length === 0 && (
               <TableRow>
-                <TableCell colSpan={8} className="text-center text-muted-foreground">
+                <TableCell colSpan={9} className="text-center text-muted-foreground">
                   Поки немає товарів. Імпортуйте їх з CJ Dropshipping.
                 </TableCell>
               </TableRow>
@@ -85,6 +86,17 @@ export default async function AdminProductsPage() {
                       totalStock
                     ) : (
                       <Badge variant="destructive">Немає в наявності</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {product.isFreeShipping === true && (
+                      <Badge variant="secondary">Безкоштовна</Badge>
+                    )}
+                    {product.isFreeShipping === false && (
+                      <Badge variant="outline">Платна</Badge>
+                    )}
+                    {product.isFreeShipping === null && (
+                      <span className="text-muted-foreground">—</span>
                     )}
                   </TableCell>
                   <TableCell>

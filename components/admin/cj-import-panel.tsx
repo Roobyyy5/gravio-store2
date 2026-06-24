@@ -96,12 +96,15 @@ export function CjImportPanel() {
     if (hasSearched) runSearch(1, size);
   }
 
-  async function importOne(pid: string): Promise<"imported" | "skipped" | "failed"> {
+  async function importOne(
+    pid: string,
+    isFreeShipping?: boolean
+  ): Promise<"imported" | "skipped" | "failed"> {
     try {
       const res = await fetch("/api/admin/cj/import", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pid }),
+        body: JSON.stringify({ pid, isFreeShipping }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Помилка імпорту");
@@ -119,26 +122,25 @@ export function CjImportPanel() {
 
   async function importProduct(pid: string) {
     setImportingPid(pid);
-    const result = await importOne(pid);
+    const item = results.find((r) => r.pid === pid);
+    const result = await importOne(pid, item?.isFreeShipping);
     if (result === "imported") toast.success("Товар імпортовано");
     if (result === "skipped") toast.info("Немає в наявності на CJ — не імпортовано");
     setImportingPid(null);
   }
 
   async function importSelected() {
-    const pids = results
-      .filter((r) => selected.has(r.pid) && !importedIds.has(r.pid))
-      .map((r) => r.pid);
-    if (pids.length === 0) return;
+    const items = results.filter((r) => selected.has(r.pid) && !importedIds.has(r.pid));
+    if (items.length === 0) return;
 
-    setBulkProgress({ done: 0, total: pids.length });
+    setBulkProgress({ done: 0, total: items.length });
     let imported = 0;
     let skipped = 0;
-    for (let i = 0; i < pids.length; i++) {
-      const result = await importOne(pids[i]);
+    for (let i = 0; i < items.length; i++) {
+      const result = await importOne(items[i].pid, items[i].isFreeShipping);
       if (result === "imported") imported++;
       if (result === "skipped") skipped++;
-      setBulkProgress({ done: i + 1, total: pids.length });
+      setBulkProgress({ done: i + 1, total: items.length });
     }
     setSelected(new Set());
     setBulkProgress(null);
@@ -165,7 +167,7 @@ export function CjImportPanel() {
         for (const item of data.list) {
           if (cancelAutoRef.current || done >= autoLimit) break;
           if (!alreadyImported.has(item.pid)) {
-            const result = await importOne(item.pid);
+            const result = await importOne(item.pid, item.isFreeShipping);
             if (result === "imported") imported++;
             if (result === "skipped") skipped++;
           }
