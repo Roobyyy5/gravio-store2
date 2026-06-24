@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { ProductVariantSelector } from "@/components/shop/product-variant-selector";
@@ -12,9 +12,9 @@ import { stripHtml } from "@/lib/utils";
 // API, so we sanitize and render the description as HTML instead of
 // stripping it to plain text, otherwise that imagery is lost.
 function sanitizeDescription(html: string): string {
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: ["p", "br", "img", "strong", "em", "b", "i", "ul", "li", "span", "div"],
-    ALLOWED_ATTR: ["src", "alt", "style"],
+  return sanitizeHtml(html, {
+    allowedTags: ["p", "br", "img", "strong", "em", "b", "i", "ul", "li", "span", "div"],
+    allowedAttributes: { img: ["src", "alt", "style"] },
   });
 }
 
