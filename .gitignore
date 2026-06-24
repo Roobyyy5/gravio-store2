@@ -32,6 +32,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# standalone Android admin wrapper (Capacitor project, not part of the web app)
+/admin-app
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

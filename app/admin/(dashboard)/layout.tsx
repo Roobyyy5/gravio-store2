@@ -1,9 +1,9 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { SignOutButton } from "@/components/admin/sign-out-button";
 import { AdminNav } from "@/components/admin/admin-nav";
-import { ShoppingBag } from "lucide-react";
 
 export default async function AdminDashboardLayout({
   children,
@@ -16,9 +16,13 @@ export default async function AdminDashboardLayout({
     <div className="flex min-h-screen">
       <aside className="flex w-60 flex-col gap-4 border-r bg-muted/30 p-4">
         <Link href="/admin" className="flex items-center gap-2 px-1">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/60 text-primary-foreground">
-            <ShoppingBag className="size-4" />
-          </span>
+          <Image
+            src="/admin-avatar.jpg"
+            alt="Univa"
+            width={32}
+            height={32}
+            className="size-8 rounded-lg object-cover"
+          />
           <div>
             <p className="text-sm font-bold leading-tight">Univa</p>
             <p className="text-xs leading-tight text-muted-foreground">Admin</p>
